@@ -25,6 +25,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
+      - name: checkout source
+        uses: actions/checkout@v4
       - name: build archive
         run: "pwsh ./build.ps1 --target Publish Archive --configuration Release --Runtime ${{matrix.rid}}"
       - name: build nuget package
