@@ -1,10 +1,7 @@
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  release:
+    types:
+      - created
 jobs:
   build:
     strategy:
@@ -49,3 +46,36 @@ jobs:
         with:
           name: nupkg
           path: dist/nupkg/Release/listdepasm*.nupkg
+  release:
+    runs-on: "windows-2022"
+    needs: build
+    permissions:
+      contents: write
+    steps:
+      - name: checkout source
+        uses: actions/checkout@v4
+      - name: download windows zip artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zip-win-x64
+          path: downloaded
+      - name: download linux tgz artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tgz-linux-x64
+          path: downloaded
+      - name: download mac tgz artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tgz-osx-x64
+          path: downloaded
+      - name: list files
+        run: "Get-ChildItem -Recurse downloaded"
+      - name: upload releases
+        run: "Get-ChildItem downloaded -Recurse -File | Foreach-Object { gh release upload ${{github.event.release.tag_name}} $_ }"
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: upload nuget package
+        run: "Get-ChildItem downloaded/nupkg/* | Foreach-Object { dotnet nuget push $_.FullName --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate"
+
