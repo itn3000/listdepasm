@@ -72,7 +72,7 @@ jobs:
       - name: list files
         run: "Get-ChildItem -Recurse downloaded"
       - name: upload releases
-        run: "Get-ChildItem downloaded -Recurse -File | Foreach-Object { gh release upload ${{github.event.release.tag_name}} $_ }"
+        run: "Get-ChildItem downloaded -Recurse -File | Foreach-Object { gh release upload ${{github.event.release.tag_name}} $_.FullName }"
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
