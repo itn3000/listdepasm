@@ -1,0 +1,48 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - name: win
+            image: windows-2022
+            rid: win-x64
+          - name: linux
+            image: ubuntu-22.04
+            rid: linux-x64
+          - name: mac
+            image: ubuntu-22.04
+            rid: osx-x64
+    runs-on: "${{matrix.image}}"
+    steps:
+      - name: setup-dotnet-8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: build archive
+        run: "pwsh ./build.ps1 --target Publish Archive --configuration Release --Runtime ${{matrix.rid}}"
+      - name: build nuget package
+        run: "pwsh ./build.ps1 --target Pack --configuration Release"
+        if: ${{matrix.name == 'win'}}
+      - name: uplaod zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zip-${{matrix.rid}}
+          path: dist/archive/Release/${{matrix.rid}}/listdepasm-${{matrix.rid}}.zip
+      - name: upload tgz artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tgz-${{matrix.rid}}
+          path: dist/archive/Release/${{matrix.rid}}/listdepasm-${{matrix.rid}}.tgz
+        if: ${{matrix.name != 'win'}} 
+      - name: upload nuget package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: dist/nupkg/Release/listdepasm*.nupkg
