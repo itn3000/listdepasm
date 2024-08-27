@@ -17,7 +17,7 @@ jobs:
             image: ubuntu-22.04
             rid: linux-x64
           - name: mac
-            image: ubuntu-22.04
+            image: macos-13
             rid: osx-x64
     runs-on: "${{matrix.image}}"
     steps:
