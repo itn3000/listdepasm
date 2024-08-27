@@ -15,6 +15,7 @@ using Nuke.Common.Tools.DotNet;
 using Microsoft.Build.Construction;
 using static Nuke.Common.IO.CompressionTasks;
 using System.IO;
+using Nuke.Common.CI.GitHubActions;
 
 class Build : NukeBuild
 {
@@ -98,5 +99,16 @@ class Build : NukeBuild
             DotNetPack(setting => setting.SetProject(project)
                 .SetConfiguration(Configuration)
                 .SetOutputDirectory(destdir));
+        });
+    [PathVariable]
+    Tool Gh;
+    [Parameter]
+    readonly string TagName;
+    Target UploadGithubRelease => _ => _
+        .After(Archive)
+        .Requires(() => !string.IsNullOrEmpty(Runtime))
+        .Executes(() =>
+        {
+            Gh($"release upload {TagName} ");
         });
 }
