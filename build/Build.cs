@@ -100,15 +100,4 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetOutputDirectory(destdir));
         });
-    [PathVariable]
-    Tool Gh;
-    [Parameter]
-    readonly string TagName;
-    Target UploadGithubRelease => _ => _
-        .After(Archive)
-        .Requires(() => !string.IsNullOrEmpty(Runtime))
-        .Executes(() =>
-        {
-            Gh($"release upload {TagName} ");
-        });
 }

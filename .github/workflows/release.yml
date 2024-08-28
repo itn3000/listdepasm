@@ -69,6 +69,11 @@ jobs:
         with:
           name: tgz-osx-x64
           path: downloaded
+      - name: download nuget artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+          path: downloaded
       - name: list files
         run: "Get-ChildItem -Recurse downloaded"
       - name: upload releases
@@ -77,5 +82,5 @@ jobs:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: upload nuget package
-        run: "Get-ChildItem downloaded/nupkg/* | Foreach-Object { dotnet nuget push $_.FullName --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate"
+        run: "Get-ChildItem downloaded/*.nupkg | Foreach-Object { dotnet nuget push $_.FullName --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate"
 
