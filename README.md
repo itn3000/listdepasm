@@ -12,7 +12,8 @@ you can download binaries from release page, extract archive, then you will get 
 
 1. install .NET SDK
 2. run `dotnet tool install -g listdepasm`
-3. add `$HOME/.dotnet/tools` to PATH environment variable
+    * [check latest version from nuget package page](https://www.nuget.org/packages/listdepasm/)
+4. add `$HOME/.dotnet/tools` to PATH environment variable
 
 ## Run
 
